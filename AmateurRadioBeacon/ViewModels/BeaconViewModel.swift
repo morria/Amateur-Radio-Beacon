@@ -70,64 +70,64 @@ final class BeaconViewModel {
     }
 
     private func setupCadenceCallbacks() {
-        print("[BeaconViewModel] Setting up cadence callbacks")
+        Log.beacon.debug("[BeaconViewModel] Setting up cadence callbacks")
         cadenceService.onStartTransmitting = { [weak self] in
-            print("[BeaconViewModel] onStartTransmitting callback triggered")
+            Log.beacon.debug("[BeaconViewModel] onStartTransmitting callback triggered")
             self?.startCurrentModeOutput()
         }
 
         cadenceService.onStopTransmitting = { [weak self] in
-            print("[BeaconViewModel] onStopTransmitting callback triggered")
+            Log.beacon.debug("[BeaconViewModel] onStopTransmitting callback triggered")
             self?.stopCurrentModeOutput()
         }
-        print("[BeaconViewModel] Cadence callbacks set up")
+        Log.beacon.debug("[BeaconViewModel] Cadence callbacks set up")
     }
 
     private func setupPlaybackCompletionCallbacks() {
-        print("[BeaconViewModel] Setting up playback completion callbacks")
+        Log.beacon.debug("[BeaconViewModel] Setting up playback completion callbacks")
         // Setup completion handlers for CW and message modes
         // These notify the cadence service when content finishes
         morseCode.onPlaybackComplete = { [weak self] in
-            print("[BeaconViewModel] Morse code playback completed")
+            Log.beacon.debug("[BeaconViewModel] Morse code playback completed")
             guard let self = self, self.isBeaconActive else {
-                print("[BeaconViewModel] Beacon not active, ignoring morse completion")
+                Log.beacon.debug("[BeaconViewModel] Beacon not active, ignoring morse completion")
                 return
             }
             self.cadenceService.contentDidFinish()
         }
 
         recordingService.onPlaybackComplete = { [weak self] in
-            print("[BeaconViewModel] Recording playback completed")
+            Log.beacon.debug("[BeaconViewModel] Recording playback completed")
             guard let self = self, self.isBeaconActive else {
-                print("[BeaconViewModel] Beacon not active, ignoring recording completion")
+                Log.beacon.debug("[BeaconViewModel] Beacon not active, ignoring recording completion")
                 return
             }
             self.cadenceService.contentDidFinish()
         }
-        print("[BeaconViewModel] Playback completion callbacks set up")
+        Log.beacon.debug("[BeaconViewModel] Playback completion callbacks set up")
     }
 
     // MARK: - Beacon Control
 
     func startBeacon(mode: BeaconMode) {
-        print("[BeaconViewModel] startBeacon called for mode: \(mode)")
+        Log.beacon.debug("[BeaconViewModel] startBeacon called for mode: \(mode)")
         activeMode = mode
         syncSettingsToServices()
-        print("[BeaconViewModel] Settings synced, starting cadence service")
+        Log.beacon.debug("[BeaconViewModel] Settings synced, starting cadence service")
         cadenceService.start()
-        print("[BeaconViewModel] Cadence service started")
+        Log.beacon.debug("[BeaconViewModel] Cadence service started")
     }
 
     func stopBeacon() {
-        print("[BeaconViewModel] stopBeacon called")
+        Log.beacon.debug("[BeaconViewModel] stopBeacon called")
         cadenceService.stop()
         stopCurrentModeOutput()
         activeMode = nil
-        print("[BeaconViewModel] Beacon stopped")
+        Log.beacon.debug("[BeaconViewModel] Beacon stopped")
     }
 
     func toggleBeacon(mode: BeaconMode) {
-        print("[BeaconViewModel] toggleBeacon called, isBeaconActive: \(isBeaconActive)")
+        Log.beacon.debug("[BeaconViewModel] toggleBeacon called, isBeaconActive: \(self.isBeaconActive)")
         if isBeaconActive {
             stopBeacon()
         } else {
@@ -151,56 +151,56 @@ final class BeaconViewModel {
     }
 
     private func startCurrentModeOutput() {
-        print("[BeaconViewModel] startCurrentModeOutput called")
+        Log.beacon.debug("[BeaconViewModel] startCurrentModeOutput called")
         guard let mode = activeMode else {
-            print("[BeaconViewModel] ERROR: activeMode is nil!")
+            Log.beacon.debug("[BeaconViewModel] ERROR: activeMode is nil!")
             return
         }
 
-        print("[BeaconViewModel] Starting output for mode: \(mode)")
+        Log.beacon.debug("[BeaconViewModel] Starting output for mode: \(mode)")
 
         do {
             switch mode {
             case .tone:
-                print("[BeaconViewModel] Tone mode - frequency: \(toneFrequency), duration: \(toneDuration)s")
+                Log.beacon.debug("[BeaconViewModel] Tone mode - frequency: \(self.toneFrequency), duration: \(self.toneDuration)s")
                 toneGenerator.frequency = toneFrequency
                 try toneGenerator.start()
-                print("[BeaconViewModel] Tone started successfully")
+                Log.beacon.debug("[BeaconViewModel] Tone started successfully")
 
                 // Set timer to signal completion after tone duration
                 toneDurationTimer?.invalidate()
                 toneDurationTimer = Timer.scheduledTimer(withTimeInterval: toneDuration, repeats: false) { [weak self] _ in
                     guard let self = self, self.isBeaconActive, self.activeMode == .tone else { return }
-                    print("[BeaconViewModel] Tone duration elapsed, signaling completion")
+                    Log.beacon.debug("[BeaconViewModel] Tone duration elapsed, signaling completion")
                     self.toneGenerator.stop()
                     self.cadenceService.contentDidFinish()
                 }
 
             case .cw:
-                print("[BeaconViewModel] CW mode - text: \(cwText), wpm: \(cwWPM)")
+                Log.beacon.debug("[BeaconViewModel] CW mode - text: \(self.cwText), wpm: \(self.cwWPM)")
                 guard !cwText.isEmpty else {
-                    print("[BeaconViewModel] ERROR: CW text is empty!")
+                    Log.beacon.debug("[BeaconViewModel] ERROR: CW text is empty!")
                     return
                 }
                 morseCode.wpm = cwWPM
                 try morseCode.play(text: cwText)
-                print("[BeaconViewModel] CW playback started successfully")
+                Log.beacon.debug("[BeaconViewModel] CW playback started successfully")
                 // Completion handled by onPlaybackComplete callback
 
             case .message:
-                print("[BeaconViewModel] Message mode - recording: \(String(describing: selectedRecording))")
+                Log.beacon.debug("[BeaconViewModel] Message mode - recording: \(String(describing: self.selectedRecording))")
                 guard let recording = selectedRecording else {
-                    print("[BeaconViewModel] ERROR: No recording selected!")
+                    Log.beacon.debug("[BeaconViewModel] ERROR: No recording selected!")
                     return
                 }
                 try recordingService.play(recording: recording)
-                print("[BeaconViewModel] Recording playback started successfully")
+                Log.beacon.debug("[BeaconViewModel] Recording playback started successfully")
                 // Completion handled by onPlaybackComplete callback
             }
             lastError = nil
         } catch {
             lastError = error
-            print("[BeaconViewModel] ERROR starting output: \(error)")
+            Log.beacon.debug("[BeaconViewModel] ERROR starting output: \(error)")
         }
     }
 
@@ -229,7 +229,7 @@ final class BeaconViewModel {
         } catch {
             lastError = error
             isRecordingNew = false
-            print("Failed to start recording: \(error)")
+            Log.recording.error("Failed to start recording: \(error)")
         }
     }
 
@@ -257,7 +257,7 @@ final class BeaconViewModel {
     // MARK: - Preview Playback
 
     func previewTone() {
-        print("[BeaconViewModel] previewTone called, isPlaying: \(toneGenerator.isPlaying)")
+        Log.beacon.debug("[BeaconViewModel] previewTone called, isPlaying: \(self.toneGenerator.isPlaying)")
         if toneGenerator.isPlaying {
             toneGenerator.stop()
         } else {
@@ -265,57 +265,57 @@ final class BeaconViewModel {
             do {
                 try toneGenerator.start()
                 lastError = nil
-                print("[BeaconViewModel] Tone preview started")
+                Log.beacon.debug("[BeaconViewModel] Tone preview started")
 
                 // Stop after 2 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-                    print("[BeaconViewModel] Stopping tone preview after timeout")
+                    Log.beacon.debug("[BeaconViewModel] Stopping tone preview after timeout")
                     self?.toneGenerator.stop()
                 }
             } catch {
                 lastError = error
-                print("[BeaconViewModel] Failed to preview tone: \(error)")
+                Log.beacon.debug("[BeaconViewModel] Failed to preview tone: \(error)")
             }
         }
     }
 
     func previewCW() {
-        print("[BeaconViewModel] previewCW called, isPlaying: \(morseCode.isPlaying)")
+        Log.beacon.debug("[BeaconViewModel] previewCW called, isPlaying: \(self.morseCode.isPlaying)")
         if morseCode.isPlaying {
             morseCode.stop()
         } else {
             guard !cwText.isEmpty else {
-                print("[BeaconViewModel] CW text is empty, cannot preview")
+                Log.beacon.debug("[BeaconViewModel] CW text is empty, cannot preview")
                 return
             }
             morseCode.wpm = cwWPM
             do {
                 try morseCode.play(text: cwText)
                 lastError = nil
-                print("[BeaconViewModel] CW preview started")
+                Log.beacon.debug("[BeaconViewModel] CW preview started")
             } catch {
                 lastError = error
-                print("[BeaconViewModel] Failed to preview CW: \(error)")
+                Log.beacon.debug("[BeaconViewModel] Failed to preview CW: \(error)")
             }
         }
     }
 
     func previewRecording() {
-        print("[BeaconViewModel] previewRecording called, isPlaying: \(recordingService.isPlaying)")
+        Log.beacon.debug("[BeaconViewModel] previewRecording called, isPlaying: \(self.recordingService.isPlaying)")
         if recordingService.isPlaying {
             recordingService.stopPlayback()
         } else {
             guard let recording = selectedRecording else {
-                print("[BeaconViewModel] No recording selected, cannot preview")
+                Log.beacon.debug("[BeaconViewModel] No recording selected, cannot preview")
                 return
             }
             do {
                 try recordingService.play(recording: recording)
                 lastError = nil
-                print("[BeaconViewModel] Recording preview started")
+                Log.beacon.debug("[BeaconViewModel] Recording preview started")
             } catch {
                 lastError = error
-                print("[BeaconViewModel] Failed to preview recording: \(error)")
+                Log.beacon.debug("[BeaconViewModel] Failed to preview recording: \(error)")
             }
         }
     }

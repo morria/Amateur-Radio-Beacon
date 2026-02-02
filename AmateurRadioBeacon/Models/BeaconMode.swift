@@ -1,7 +1,7 @@
 import Foundation
 
 /// The three operating modes of the beacon station
-enum BeaconMode: String, CaseIterable, Identifiable {
+enum BeaconMode: String, CaseIterable, Identifiable, CustomStringConvertible {
     case tone = "Tone"
     case message = "Message"
     case cw = "CW"

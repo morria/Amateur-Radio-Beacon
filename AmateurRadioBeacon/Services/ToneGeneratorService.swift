@@ -55,14 +55,14 @@ final class ToneGeneratorService {
 
     func start() throws {
         guard !isPlaying else {
-            print("[ToneGeneratorService] Already playing, ignoring start request")
+            Log.audio.debug("[ToneGeneratorService] Already playing, ignoring start request")
             return
         }
 
-        print("[ToneGeneratorService] Starting tone at \(frequency) Hz")
+        Log.audio.debug("[ToneGeneratorService] Starting tone at \(self.frequency) Hz")
 
         try AudioSessionManager.shared.configureForPlayback()
-        print("[ToneGeneratorService] Audio session configured for playback")
+        Log.audio.debug("[ToneGeneratorService] Audio session configured for playback")
 
         // Capture current values for the audio thread
         let currentFrequency = frequency
@@ -80,7 +80,7 @@ final class ToneGeneratorService {
         let outputFormat = mainMixer.outputFormat(forBus: 0)
         let sampleRate = outputFormat.sampleRate
 
-        print("[ToneGeneratorService] Sample rate: \(sampleRate), channels: \(outputFormat.channelCount)")
+        Log.audio.debug("[ToneGeneratorService] Sample rate: \(sampleRate), channels: \(outputFormat.channelCount)")
 
         // Capture the lock for the audio callback - no self reference needed
         let stateLock = audioState
@@ -119,14 +119,14 @@ final class ToneGeneratorService {
         mainMixer.outputVolume = 1.0
 
         try engine.start()
-        print("[ToneGeneratorService] Audio engine started successfully")
-        print("[ToneGeneratorService] Engine isRunning: \(engine.isRunning)")
-        print("[ToneGeneratorService] MainMixer outputVolume: \(mainMixer.outputVolume)")
+        Log.audio.debug("[ToneGeneratorService] Audio engine started successfully")
+        Log.audio.debug("[ToneGeneratorService] Engine isRunning: \(engine.isRunning)")
+        Log.audio.debug("[ToneGeneratorService] MainMixer outputVolume: \(mainMixer.outputVolume)")
 
         self.audioEngine = engine
         self.sourceNode = sourceNode
         isPlaying = true
-        print("[ToneGeneratorService] Tone playback active, isPlaying: \(isPlaying)")
+        Log.audio.debug("[ToneGeneratorService] Tone playback active, isPlaying: \(self.isPlaying)")
     }
 
     func stop() {

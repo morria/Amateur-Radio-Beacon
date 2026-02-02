@@ -8,19 +8,29 @@ final class AudioSessionManager {
     private(set) var isSessionActive = false
     private(set) var hasMicrophonePermission = false
 
-    private enum SessionMode { case none, playback, recording }
+    private enum SessionMode: CustomStringConvertible {
+        case none, playback, recording
+
+        var description: String {
+            switch self {
+            case .none: return "none"
+            case .playback: return "playback"
+            case .recording: return "recording"
+            }
+        }
+    }
     private var currentMode: SessionMode = .none
 
     private init() {}
 
     /// Configure audio session for playback (tone/CW modes)
     func configureForPlayback() throws {
-        print("[AudioSessionManager] Configuring for playback, current mode: \(currentMode)")
+        Log.audio.debug("[AudioSessionManager] Configuring for playback, current mode: \(self.currentMode)")
         let session = AVAudioSession.sharedInstance()
 
         // Deactivate if switching from recording mode
         if currentMode == .recording {
-            print("[AudioSessionManager] Switching from recording - deactivating session")
+            Log.audio.debug("[AudioSessionManager] Switching from recording - deactivating session")
             try session.setActive(false, options: .notifyOthersOnDeactivation)
             // Brief delay to allow audio system to settle
             Thread.sleep(forTimeInterval: 0.05)
@@ -30,17 +40,17 @@ final class AudioSessionManager {
         try session.setActive(true)
         isSessionActive = true
         currentMode = .playback
-        print("[AudioSessionManager] Playback mode configured successfully")
+        Log.audio.debug("[AudioSessionManager] Playback mode configured successfully")
     }
 
     /// Configure audio session for recording (message mode)
     func configureForRecording() throws {
-        print("[AudioSessionManager] Configuring for recording, current mode: \(currentMode)")
+        Log.audio.debug("[AudioSessionManager] Configuring for recording, current mode: \(self.currentMode)")
         let session = AVAudioSession.sharedInstance()
 
         // Deactivate if switching from playback mode
         if currentMode == .playback {
-            print("[AudioSessionManager] Switching from playback - deactivating session")
+            Log.audio.debug("[AudioSessionManager] Switching from playback - deactivating session")
             try session.setActive(false, options: .notifyOthersOnDeactivation)
             // Brief delay to allow audio system to settle
             Thread.sleep(forTimeInterval: 0.05)
@@ -50,7 +60,7 @@ final class AudioSessionManager {
         try session.setActive(true)
         isSessionActive = true
         currentMode = .recording
-        print("[AudioSessionManager] Recording mode configured successfully")
+        Log.audio.debug("[AudioSessionManager] Recording mode configured successfully")
     }
 
     /// Deactivate audio session
@@ -60,7 +70,7 @@ final class AudioSessionManager {
             isSessionActive = false
             currentMode = .none
         } catch {
-            print("Failed to deactivate audio session: \(error)")
+            Log.audio.error("Failed to deactivate audio session: \(error)")
         }
     }
 

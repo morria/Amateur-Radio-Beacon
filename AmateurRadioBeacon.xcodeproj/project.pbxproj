@@ -25,6 +25,8 @@
 		1100000000000017 /* BeaconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000017 /* BeaconButton.swift */; };
 		1100000000000018 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2200000000000018 /* Assets.xcassets */; };
 		1100000000000019 /* ModeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000019 /* ModeSelectionView.swift */; };
+		1100000000000020 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000020 /* Logger.swift */; };
+		1100000000000021 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000021 /* AboutView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +49,8 @@
 		2200000000000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2200000000000019 /* ModeSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeSelectionView.swift; sourceTree = "<group>"; };
 		3300000000000001 /* AmateurRadioBeacon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AmateurRadioBeacon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2200000000000020 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		2200000000000021 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +78,7 @@
 				5500000000000003 /* App */,
 				5500000000000004 /* Models */,
 				5500000000000005 /* Services */,
+				5500000000000008 /* Utilities */,
 				5500000000000006 /* ViewModels */,
 				5500000000000007 /* Views */,
 				2200000000000018 /* Assets.xcassets */,
@@ -122,6 +127,7 @@
 		5500000000000007 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2200000000000021 /* AboutView.swift */,
 				2200000000000011 /* BeaconView.swift */,
 				2200000000000013 /* ToneModeView.swift */,
 				2200000000000014 /* CWModeView.swift */,
@@ -131,6 +137,14 @@
 				2200000000000019 /* ModeSelectionView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		5500000000000008 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				2200000000000020 /* Logger.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		5500000000000009 /* Products */ = {
@@ -227,6 +241,8 @@
 				1100000000000016 /* CadenceControlsView.swift in Sources */,
 				1100000000000017 /* BeaconButton.swift in Sources */,
 				1100000000000019 /* ModeSelectionView.swift in Sources */,
+				1100000000000020 /* Logger.swift in Sources */,
+				1100000000000021 /* AboutView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

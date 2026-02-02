@@ -21,45 +21,45 @@ final class CadenceService {
 
     func start() {
         guard !isRunning else {
-            print("[CadenceService] Already running, ignoring start request")
+            Log.cadence.debug("[CadenceService] Already running, ignoring start request")
             return
         }
-        print("[CadenceService] Starting cadence")
+        Log.cadence.debug("[CadenceService] Starting cadence")
         startTransmitting()
     }
 
     func stop() {
-        print("[CadenceService] Stopping cadence")
+        Log.cadence.debug("[CadenceService] Stopping cadence")
         timer?.invalidate()
         timer = nil
         phaseStartTime = nil
 
         if phase == .transmitting {
-            print("[CadenceService] Calling onStopTransmitting")
+            Log.cadence.debug("[CadenceService] Calling onStopTransmitting")
             onStopTransmitting?()
         }
 
         phase = .idle
         timeRemaining = 0
-        print("[CadenceService] Cadence stopped, phase is now idle")
+        Log.cadence.debug("[CadenceService] Cadence stopped, phase is now idle")
     }
 
     /// Called when content playback finishes (for CW/message modes)
     /// This triggers the pause phase if not continuous
     func contentDidFinish() {
-        print("[CadenceService] Content did finish, phase: \(phase), isContinuous: \(configuration.isContinuous)")
+        Log.cadence.debug("[CadenceService] Content did finish, phase: \(self.phase), isContinuous: \(self.configuration.isContinuous)")
         guard phase == .transmitting else {
-            print("[CadenceService] Not transmitting, ignoring contentDidFinish")
+            Log.cadence.debug("[CadenceService] Not transmitting, ignoring contentDidFinish")
             return
         }
 
         if configuration.isContinuous {
             // Immediately restart
-            print("[CadenceService] Continuous mode - restarting transmission")
+            Log.cadence.debug("[CadenceService] Continuous mode - restarting transmission")
             onStartTransmitting?()
         } else {
             // Start pause phase
-            print("[CadenceService] Starting wait phase")
+            Log.cadence.debug("[CadenceService] Starting wait phase")
             startWaiting()
         }
     }
@@ -67,10 +67,10 @@ final class CadenceService {
     private func startTransmitting() {
         phase = .transmitting
         timeRemaining = 0
-        print("[CadenceService] Phase set to transmitting, calling onStartTransmitting")
-        print("[CadenceService] onStartTransmitting is \(onStartTransmitting == nil ? "nil" : "set")")
+        Log.cadence.debug("[CadenceService] Phase set to transmitting, calling onStartTransmitting")
+        Log.cadence.debug("[CadenceService] onStartTransmitting is \(self.onStartTransmitting == nil ? "nil" : "set")")
         onStartTransmitting?()
-        print("[CadenceService] onStartTransmitting callback completed")
+        Log.cadence.debug("[CadenceService] onStartTransmitting callback completed")
     }
 
     private func startWaiting() {

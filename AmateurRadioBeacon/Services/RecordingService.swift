@@ -108,28 +108,28 @@ final class RecordingService {
 
     func play(recording: Recording) throws {
         guard !isPlaying else {
-            print("[RecordingService] Already playing, ignoring play request")
+            Log.recording.debug("[RecordingService] Already playing, ignoring play request")
             return
         }
 
-        print("[RecordingService] Starting playback for recording: \(recording.name)")
-        print("[RecordingService] File URL: \(recording.fileURL)")
+        Log.recording.debug("[RecordingService] Starting playback for recording: \(recording.name)")
+        Log.recording.debug("[RecordingService] File URL: \(recording.fileURL)")
 
         // Validate file exists before attempting playback
         guard FileManager.default.fileExists(atPath: recording.fileURL.path) else {
-            print("[RecordingService] ERROR: File not found at path: \(recording.fileURL.path)")
+            Log.recording.debug("[RecordingService] ERROR: File not found at path: \(recording.fileURL.path)")
             throw RecordingError.fileNotFound
         }
 
-        print("[RecordingService] File exists, configuring audio session")
+        Log.recording.debug("[RecordingService] File exists, configuring audio session")
         try AudioSessionManager.shared.configureForPlayback()
 
-        print("[RecordingService] Creating audio player")
+        Log.recording.debug("[RecordingService] Creating audio player")
         let player = try AVAudioPlayer(contentsOf: recording.fileURL)
 
         // Store player and delegate BEFORE calling play
         let delegate = PlaybackDelegate { [weak self] in
-            print("[RecordingService] Playback finished via delegate")
+            Log.recording.debug("[RecordingService] Playback finished via delegate")
             self?.isPlaying = false
             self?.playbackDelegate = nil
             self?.onPlaybackComplete?()
@@ -143,12 +143,12 @@ final class RecordingService {
         player.volume = 1.0
 
         let success = player.play()
-        print("[RecordingService] play() returned: \(success), duration: \(player.duration), isPlaying: \(player.isPlaying)")
+        Log.recording.debug("[RecordingService] play() returned: \(success), duration: \(player.duration), isPlaying: \(player.isPlaying)")
 
         if success {
             isPlaying = true
         } else {
-            print("[RecordingService] ERROR: play() returned false!")
+            Log.recording.debug("[RecordingService] ERROR: play() returned false!")
             throw RecordingError.playbackFailed
         }
     }

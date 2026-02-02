@@ -229,23 +229,23 @@ final class MorseCodeService {
 
     func play(text: String) throws {
         guard !isPlaying else {
-            print("[MorseCodeService] Already playing, ignoring play request")
+            Log.audio.debug("[MorseCodeService] Already playing, ignoring play request")
             return
         }
         guard !text.isEmpty else {
-            print("[MorseCodeService] Empty text provided")
+            Log.audio.debug("[MorseCodeService] Empty text provided")
             throw MorseCodeError.emptyText
         }
 
         // Check if text produces any morse code
         let morse = textToMorse(text)
         guard !morse.isEmpty else {
-            print("[MorseCodeService] No morse characters in text: \(text)")
+            Log.audio.debug("[MorseCodeService] No morse characters in text: \(text)")
             throw MorseCodeError.noMorseCharacters
         }
 
-        print("[MorseCodeService] Starting playback for text: \(text)")
-        print("[MorseCodeService] Morse pattern: \(morse)")
+        Log.audio.debug("[MorseCodeService] Starting playback for text: \(text)")
+        Log.audio.debug("[MorseCodeService] Morse pattern: \(morse)")
 
         try AudioSessionManager.shared.configureForPlayback()
 
@@ -255,14 +255,14 @@ final class MorseCodeService {
         let outputFormat = mainMixer.outputFormat(forBus: 0)
         let sampleRate = outputFormat.sampleRate
 
-        print("[MorseCodeService] Sample rate: \(sampleRate)")
+        Log.audio.debug("[MorseCodeService] Sample rate: \(sampleRate)")
 
         guard let buffer = generateAudio(for: text, sampleRate: sampleRate) else {
-            print("[MorseCodeService] Failed to generate audio buffer")
+            Log.audio.debug("[MorseCodeService] Failed to generate audio buffer")
             throw MorseCodeError.bufferCreationFailed
         }
 
-        print("[MorseCodeService] Generated buffer with \(buffer.frameLength) frames")
+        Log.audio.debug("[MorseCodeService] Generated buffer with \(buffer.frameLength) frames")
 
         // Use the buffer's format for connection
         let format = buffer.format
@@ -270,7 +270,7 @@ final class MorseCodeService {
         engine.connect(player, to: mainMixer, format: format)
 
         try engine.start()
-        print("[MorseCodeService] Audio engine started")
+        Log.audio.debug("[MorseCodeService] Audio engine started")
 
         self.audioEngine = engine
         self.playerNode = player
@@ -279,15 +279,15 @@ final class MorseCodeService {
 
         player.scheduleBuffer(buffer) { [weak self] in
             DispatchQueue.main.async {
-                print("[MorseCodeService] Buffer playback completed")
+                Log.audio.debug("[MorseCodeService] Buffer playback completed")
                 self?.isPlaying = false
                 self?.onPlaybackComplete?()
             }
         }
 
         player.play()
-        print("[MorseCodeService] Player started, isPlaying: \(player.isPlaying)")
-        print("[MorseCodeService] Engine isRunning: \(engine.isRunning)")
+        Log.audio.debug("[MorseCodeService] Player started, isPlaying: \(player.isPlaying)")
+        Log.audio.debug("[MorseCodeService] Engine isRunning: \(engine.isRunning)")
     }
 
     func stop() {

@@ -4,6 +4,8 @@ import SwiftUI
 struct BeaconView: View {
     @State private var viewModel = BeaconViewModel()
     @State private var selectedMode: BeaconMode?
+    @State private var showingError = false
+    @State private var errorMessage = ""
 
     var body: some View {
         NavigationStack {
@@ -62,6 +64,34 @@ struct BeaconView: View {
                     }
                 }
             }
+        }
+        .onChange(of: viewModel.lastError as? NSError) { _, newError in
+            if let error = newError {
+                errorMessage = describeError(error)
+                showingError = true
+            }
+        }
+        .alert("Error", isPresented: $showingError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func describeError(_ error: Error) -> String {
+        switch error {
+        case MorseCodeError.emptyText:
+            return "Please enter text to transmit."
+        case MorseCodeError.noMorseCharacters:
+            return "The text contains no valid Morse code characters."
+        case MorseCodeError.bufferCreationFailed:
+            return "Failed to generate audio. Please try again."
+        case RecordingService.RecordingError.fileNotFound:
+            return "Recording file not found. It may have been deleted."
+        case RecordingService.RecordingError.playbackFailed:
+            return "Failed to play recording. Please try again."
+        default:
+            return error.localizedDescription
         }
     }
 

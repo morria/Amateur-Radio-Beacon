@@ -16,12 +16,12 @@ struct CadenceConfiguration: Equatable {
 }
 
 /// Current phase of the beacon cycle
-enum CadencePhase: Equatable {
+enum CadencePhase: Equatable, CustomStringConvertible {
     case idle
     case transmitting
     case waiting
 
-    var displayText: String {
+    var description: String {
         switch self {
         case .idle:
             return "Idle"

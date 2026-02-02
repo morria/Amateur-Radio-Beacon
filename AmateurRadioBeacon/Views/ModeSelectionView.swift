@@ -3,6 +3,7 @@ import SwiftUI
 /// Initial screen for selecting beacon mode
 struct ModeSelectionView: View {
     @Binding var selectedMode: BeaconMode?
+    @State private var showingAbout = false
 
     var body: some View {
         ScrollView {
@@ -63,7 +64,19 @@ struct ModeSelectionView: View {
             }
             .padding(.bottom, 40)
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color(uiColor: .systemGroupedBackground))
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingAbout = true
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+            }
+        }
+        .sheet(isPresented: $showingAbout) {
+            AboutView()
+        }
     }
 }
 
@@ -123,7 +136,7 @@ private struct ModeCard: View {
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(Color(.systemBackground))
+            .background(Color(uiColor: .systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .contentShape(RoundedRectangle(cornerRadius: 16))
         }
