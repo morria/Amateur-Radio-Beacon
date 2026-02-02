@@ -71,6 +71,8 @@ struct BeaconView: View {
         case .tone:
             ToneModeView(
                 frequency: $viewModel.toneFrequency,
+                duration: $viewModel.toneDuration,
+                durationRange: BeaconViewModel.minToneDuration...BeaconViewModel.maxToneDuration,
                 isPlaying: viewModel.toneGenerator.isPlaying,
                 onPreview: { viewModel.previewTone() }
             )

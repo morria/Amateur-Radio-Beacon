@@ -23,6 +23,12 @@ final class BeaconViewModel {
     // MARK: - Tone Mode State
 
     var toneFrequency: Double = 700.0
+    var toneDuration: Double = 5.0  // Duration in seconds per iteration
+
+    static let minToneDuration: Double = 1.0
+    static let maxToneDuration: Double = 60.0
+
+    @ObservationIgnored private var toneDurationTimer: Timer?
 
     // MARK: - CW Mode State
 
@@ -156,11 +162,19 @@ final class BeaconViewModel {
         do {
             switch mode {
             case .tone:
-                print("[BeaconViewModel] Tone mode - frequency: \(toneFrequency)")
+                print("[BeaconViewModel] Tone mode - frequency: \(toneFrequency), duration: \(toneDuration)s")
                 toneGenerator.frequency = toneFrequency
                 try toneGenerator.start()
                 print("[BeaconViewModel] Tone started successfully")
-                // Tone plays continuously, completion handled by cadence timer
+
+                // Set timer to signal completion after tone duration
+                toneDurationTimer?.invalidate()
+                toneDurationTimer = Timer.scheduledTimer(withTimeInterval: toneDuration, repeats: false) { [weak self] _ in
+                    guard let self = self, self.isBeaconActive, self.activeMode == .tone else { return }
+                    print("[BeaconViewModel] Tone duration elapsed, signaling completion")
+                    self.toneGenerator.stop()
+                    self.cadenceService.contentDidFinish()
+                }
 
             case .cw:
                 print("[BeaconViewModel] CW mode - text: \(cwText), wpm: \(cwWPM)")
@@ -195,6 +209,8 @@ final class BeaconViewModel {
 
         switch mode {
         case .tone:
+            toneDurationTimer?.invalidate()
+            toneDurationTimer = nil
             toneGenerator.stop()
         case .cw:
             morseCode.stop()
