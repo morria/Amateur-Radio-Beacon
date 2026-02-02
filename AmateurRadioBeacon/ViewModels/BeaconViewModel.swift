@@ -132,8 +132,16 @@ final class BeaconViewModel {
     // MARK: - Mode Output Control
 
     private func syncSettingsToServices() {
-        toneGenerator.frequency = toneFrequency
-        morseCode.wpm = cwWPM
+        guard let mode = activeMode else { return }
+
+        switch mode {
+        case .tone:
+            toneGenerator.frequency = toneFrequency
+        case .cw:
+            morseCode.wpm = cwWPM
+        case .message:
+            break // No settings to sync for message mode
+        }
     }
 
     private func startCurrentModeOutput() {

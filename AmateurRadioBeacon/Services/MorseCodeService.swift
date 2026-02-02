@@ -24,15 +24,18 @@ final class MorseCodeService {
     /// Words per minute (5-40)
     var wpm: Double = 20.0 {
         didSet {
-            wpm = min(max(wpm, Self.minWPM), Self.maxWPM)
+            let clamped = min(max(wpm, Self.minWPM), Self.maxWPM)
+            if wpm != clamped {
+                wpm = clamped
+            }
         }
     }
 
     /// Tone frequency in Hz
-    var frequency: Double = 700.0
+    @ObservationIgnored var frequency: Double = 700.0
 
     /// Amplitude (0.0-1.0)
-    var amplitude: Double = 0.5
+    @ObservationIgnored var amplitude: Double = 0.5
 
     static let minWPM: Double = 5.0
     static let maxWPM: Double = 40.0
