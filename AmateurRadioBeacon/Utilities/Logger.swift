@@ -3,7 +3,7 @@ import os
 
 /// Centralized logging for the beacon app
 enum Log {
-    private static let subsystem = Bundle.main.bundleIdentifier ?? "com.amateurradio.beacon"
+    private static let subsystem = Bundle.main.bundleIdentifier ?? "com.w2asm.AmateurRadioBeacon"
 
     static let audio = Logger(subsystem: subsystem, category: "Audio")
     static let beacon = Logger(subsystem: subsystem, category: "Beacon")
