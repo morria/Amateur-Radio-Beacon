@@ -4,10 +4,10 @@ import Foundation
 /// Handles voice recording and playback for message mode
 @Observable
 final class RecordingService {
-    private var audioRecorder: AVAudioRecorder?
-    private var audioPlayer: AVAudioPlayer?
-    private var recordingTimer: Timer?
-    private var playbackDelegate: PlaybackDelegate?
+    @ObservationIgnored private var audioRecorder: AVAudioRecorder?
+    @ObservationIgnored private var audioPlayer: AVAudioPlayer?
+    @ObservationIgnored private var recordingTimer: Timer?
+    @ObservationIgnored private var playbackDelegate: PlaybackDelegate?
 
     private(set) var isRecording = false
     private(set) var isPlaying = false
@@ -15,7 +15,7 @@ final class RecordingService {
     private(set) var recordings: [Recording] = []
 
     /// Callback invoked when playback finishes
-    var onPlaybackComplete: (() -> Void)?
+    @ObservationIgnored var onPlaybackComplete: (() -> Void)?
 
     private let recordingsKey = "SavedRecordings"
 

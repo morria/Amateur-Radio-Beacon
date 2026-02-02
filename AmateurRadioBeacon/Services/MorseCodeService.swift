@@ -12,14 +12,14 @@ enum MorseCodeError: Error {
 /// Converts text to Morse code audio
 @Observable
 final class MorseCodeService {
-    private var audioEngine: AVAudioEngine?
-    private var playerNode: AVAudioPlayerNode?
-    private var audioBuffer: AVAudioPCMBuffer?
+    @ObservationIgnored private var audioEngine: AVAudioEngine?
+    @ObservationIgnored private var playerNode: AVAudioPlayerNode?
+    @ObservationIgnored private var audioBuffer: AVAudioPCMBuffer?
 
     private(set) var isPlaying = false
 
     /// Callback invoked when playback finishes
-    var onPlaybackComplete: (() -> Void)?
+    @ObservationIgnored var onPlaybackComplete: (() -> Void)?
 
     /// Words per minute (5-40)
     var wpm: Double = 20.0 {

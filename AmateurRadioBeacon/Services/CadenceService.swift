@@ -3,8 +3,8 @@ import Foundation
 /// Manages the beacon transmission timing cycle
 @Observable
 final class CadenceService {
-    private var timer: Timer?
-    private var phaseStartTime: Date?
+    @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var phaseStartTime: Date?
 
     private(set) var phase: CadencePhase = .idle
     private(set) var timeRemaining: TimeInterval = 0
@@ -12,8 +12,8 @@ final class CadenceService {
     var configuration = CadenceConfiguration()
 
     /// Callbacks for phase changes
-    var onStartTransmitting: (() -> Void)?
-    var onStopTransmitting: (() -> Void)?
+    @ObservationIgnored var onStartTransmitting: (() -> Void)?
+    @ObservationIgnored var onStopTransmitting: (() -> Void)?
 
     var isRunning: Bool {
         phase != .idle

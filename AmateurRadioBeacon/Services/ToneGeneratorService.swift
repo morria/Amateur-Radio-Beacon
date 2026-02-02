@@ -5,26 +5,29 @@ import os
 /// Generates a real-time sine wave tone using AVAudioEngine
 @Observable
 final class ToneGeneratorService {
-    private var audioEngine: AVAudioEngine?
-    private var sourceNode: AVAudioSourceNode?
+    @ObservationIgnored private var audioEngine: AVAudioEngine?
+    @ObservationIgnored private var sourceNode: AVAudioSourceNode?
 
     private(set) var isPlaying = false
 
-    // Thread-safe state container for audio parameters
-    private struct AudioState {
+    // Thread-safe state container for audio parameters accessed from audio thread
+    private struct AudioState: Sendable {
         var frequency: Double = 700.0
         var amplitude: Double = 0.5
         var phase: Double = 0.0
     }
 
-    private let audioState = OSAllocatedUnfairLock(initialState: AudioState())
+    @ObservationIgnored private let audioState = OSAllocatedUnfairLock(initialState: AudioState())
 
     /// Current frequency in Hz (200-2000)
     var frequency: Double = 700.0 {
         didSet {
-            frequency = min(max(frequency, Self.minFrequency), Self.maxFrequency)
+            let clampedFrequency = min(max(frequency, Self.minFrequency), Self.maxFrequency)
+            if frequency != clampedFrequency {
+                frequency = clampedFrequency
+            }
             audioState.withLock { state in
-                state.frequency = frequency
+                state.frequency = clampedFrequency
             }
         }
     }
@@ -48,7 +51,7 @@ final class ToneGeneratorService {
         ("1000 Hz", 1000.0)
     ]
 
-    private var phaseIncrement: Double = 0.0
+    @ObservationIgnored private var phaseIncrement: Double = 0.0
 
     func start() throws {
         guard !isPlaying else {
@@ -61,10 +64,14 @@ final class ToneGeneratorService {
         try AudioSessionManager.shared.configureForPlayback()
         print("[ToneGeneratorService] Audio session configured for playback")
 
+        // Capture current values for the audio thread
+        let currentFrequency = frequency
+        let currentAmplitude = amplitude
+
         // Initialize thread-safe parameters
         audioState.withLock { state in
-            state.frequency = frequency
-            state.amplitude = amplitude
+            state.frequency = currentFrequency
+            state.amplitude = currentAmplitude
             state.phase = 0.0
         }
 
@@ -75,10 +82,7 @@ final class ToneGeneratorService {
 
         print("[ToneGeneratorService] Sample rate: \(sampleRate), channels: \(outputFormat.channelCount)")
 
-        // Calculate initial phase increment
-        phaseIncrement = (2.0 * Double.pi * frequency) / sampleRate
-
-        // Capture the lock for the audio callback
+        // Capture the lock for the audio callback - no self reference needed
         let stateLock = audioState
 
         let sourceNode = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in
