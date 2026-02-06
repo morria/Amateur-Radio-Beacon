@@ -4,6 +4,7 @@ import SwiftUI
 
 /// Main view model coordinating all beacon functionality
 @Observable
+@MainActor
 final class BeaconViewModel {
     // MARK: - Services
 
@@ -170,10 +171,12 @@ final class BeaconViewModel {
                 // Set timer to signal completion after tone duration
                 toneDurationTimer?.invalidate()
                 toneDurationTimer = Timer.scheduledTimer(withTimeInterval: toneDuration, repeats: false) { [weak self] _ in
-                    guard let self = self, self.isBeaconActive, self.activeMode == .tone else { return }
-                    Log.beacon.debug("[BeaconViewModel] Tone duration elapsed, signaling completion")
-                    self.toneGenerator.stop()
-                    self.cadenceService.contentDidFinish()
+                    MainActor.assumeIsolated {
+                        guard let self = self, self.isBeaconActive, self.activeMode == .tone else { return }
+                        Log.beacon.debug("[BeaconViewModel] Tone duration elapsed, signaling completion")
+                        self.toneGenerator.stop()
+                        self.cadenceService.contentDidFinish()
+                    }
                 }
 
             case .cw:

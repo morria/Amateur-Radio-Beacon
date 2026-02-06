@@ -3,6 +3,7 @@ import Foundation
 
 /// Handles voice recording and playback for message mode
 @Observable
+@MainActor
 final class RecordingService {
     @ObservationIgnored private var audioRecorder: AVAudioRecorder?
     @ObservationIgnored private var audioPlayer: AVAudioPlayer?
@@ -50,10 +51,14 @@ final class RecordingService {
         isRecording = true
         recordingDuration = 0
 
-        // Start timer to track duration
-        recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.recordingDuration = self?.audioRecorder?.currentTime ?? 0
+        // Start timer to track duration on main run loop
+        let timer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.recordingDuration = self?.audioRecorder?.currentTime ?? 0
+            }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        recordingTimer = timer
 
         // Return a placeholder recording - actual duration will be set on stop
         return Recording(
