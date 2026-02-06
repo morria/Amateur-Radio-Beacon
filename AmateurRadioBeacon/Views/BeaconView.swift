@@ -2,15 +2,106 @@ import SwiftUI
 
 /// Main beacon station interface
 struct BeaconView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var viewModel = BeaconViewModel()
     @State private var selectedMode: BeaconMode?
     @State private var showingError = false
     @State private var errorMessage = ""
 
     var body: some View {
+        if horizontalSizeClass == .regular {
+            iPadLayout
+        } else {
+            iPhoneLayout
+        }
+    }
+
+    // MARK: - iPad Layout
+
+    private var iPadLayout: some View {
+        NavigationSplitView {
+            sidebarView
+        } detail: {
+            if let mode = selectedMode {
+                beaconControlView(for: mode, showBackButton: false)
+            } else {
+                ContentUnavailableView(
+                    "Select a Mode",
+                    systemImage: "antenna.radiowaves.left.and.right",
+                    description: Text("Choose a beacon mode from the sidebar to begin")
+                )
+            }
+        }
+        .navigationSplitViewColumnWidth(min: 220, ideal: 250, max: 300)
+        .onAppear {
+            if selectedMode == nil {
+                selectedMode = .tone
+            }
+        }
+    }
+
+    private var sidebarView: some View {
+        List(BeaconMode.allCases, selection: $selectedMode) { mode in
+            sidebarRow(for: mode)
+                .tag(mode)
+        }
+        .navigationTitle("Beacon")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                aboutButton
+            }
+        }
+    }
+
+    private func sidebarRow(for mode: BeaconMode) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(mode.rawValue)
+                Text(mode.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        } icon: {
+            Image(systemName: iconName(for: mode))
+                .foregroundStyle(iconColor(for: mode))
+        }
+    }
+
+    private func iconName(for mode: BeaconMode) -> String {
+        switch mode {
+        case .tone: return "waveform"
+        case .cw: return "ellipsis.message"
+        case .message: return "mic.fill"
+        }
+    }
+
+    private func iconColor(for mode: BeaconMode) -> Color {
+        switch mode {
+        case .tone: return .blue
+        case .cw: return .purple
+        case .message: return .orange
+        }
+    }
+
+    @State private var showingAbout = false
+
+    private var aboutButton: some View {
+        Button {
+            showingAbout = true
+        } label: {
+            Image(systemName: "info.circle")
+        }
+        .sheet(isPresented: $showingAbout) {
+            AboutView()
+        }
+    }
+
+    // MARK: - iPhone Layout
+
+    private var iPhoneLayout: some View {
         NavigationStack {
             if let mode = selectedMode {
-                beaconControlView(for: mode)
+                beaconControlView(for: mode, showBackButton: true)
             } else {
                 ModeSelectionView(selectedMode: $selectedMode)
             }
@@ -18,7 +109,7 @@ struct BeaconView: View {
     }
 
     @ViewBuilder
-    private func beaconControlView(for mode: BeaconMode) -> some View {
+    private func beaconControlView(for mode: BeaconMode, showBackButton: Bool) -> some View {
         VStack(spacing: 0) {
             // Mode-specific controls
             ScrollView {
@@ -51,16 +142,18 @@ struct BeaconView: View {
         .navigationTitle(mode.rawValue)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    if viewModel.isBeaconActive {
-                        viewModel.stopBeacon()
-                    }
-                    selectedMode = nil
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text("Modes")
+            if showBackButton {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        if viewModel.isBeaconActive {
+                            viewModel.stopBeacon()
+                        }
+                        selectedMode = nil
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text("Modes")
+                        }
                     }
                 }
             }
