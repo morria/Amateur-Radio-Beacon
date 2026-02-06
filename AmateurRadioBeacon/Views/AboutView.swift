@@ -26,22 +26,32 @@ struct AboutView: View {
 
                     Divider()
 
-                    // Important Notice
+                    // What This App Does
                     DisclaimerSection(
-                        title: "Important Notice",
-                        icon: "exclamationmark.triangle.fill",
-                        iconColor: .orange
+                        title: "What This App Does",
+                        icon: "antenna.radiowaves.left.and.right",
+                        iconColor: .blue
                     ) {
-                        Text("This app generates audio tones for use with amateur radio transmitters. It does not transmit radio signals directly.")
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Connect your device to your radio's audio input to:")
+                            BulletPoint("Play a continuous tone while tuning your antenna or testing your setup")
+                            BulletPoint("Transmit Morse code (CW) beacons from text you enter")
+                            BulletPoint("Loop a recorded voice message for ID or beacon operation")
+                            Text("Set the cadence to control how often transmissions repeat, with configurable on-air and off-air intervals.")
+                                .padding(.top, 4)
+                        }
                     }
 
-                    // Regulatory Compliance
+                    // VOX Recommendation
                     DisclaimerSection(
-                        title: "Regulatory Compliance",
-                        icon: "checkmark.shield.fill",
-                        iconColor: .green
+                        title: "VOX Recommendation",
+                        icon: "mic.fill",
+                        iconColor: .orange
                     ) {
-                        Text("Operating a radio transmitter requires appropriate licensing. In the United States, beacon stations must comply with FCC Part 97 regulations. Users are responsible for ensuring compliance with all applicable laws and regulations in their jurisdiction.")
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("For best results, enable VOX (voice-operated transmit) on your transceiver.")
+                            Text("This app outputs audio only (tone, CW, or voice). It does not control PTT or key your transmitter directly. Your transceiver must be configured to key from the audio input.")
+                        }
                     }
 
                     // License Requirements
@@ -57,33 +67,6 @@ struct AboutView: View {
                             BulletPoint("Operate only on authorized frequencies")
                             BulletPoint("Follow proper station identification procedures")
                         }
-                    }
-
-                    // Audio Simulator
-                    DisclaimerSection(
-                        title: "Audio Simulator",
-                        icon: "speaker.wave.2.fill",
-                        iconColor: .purple
-                    ) {
-                        Text("This app is an audio generator only. Connect the audio output to your transmitter's audio input. The app does not control RF transmission or provide any RF functionality.")
-                    }
-
-                    // Disclaimer
-                    DisclaimerSection(
-                        title: "Disclaimer",
-                        icon: "doc.text.fill",
-                        iconColor: .gray
-                    ) {
-                        Text("This software is provided as-is without warranty. The developer is not responsible for any misuse, regulatory violations, or interference caused by improper operation. Use at your own risk and responsibility.")
-                    }
-
-                    // Privacy
-                    DisclaimerSection(
-                        title: "Privacy",
-                        icon: "lock.shield.fill",
-                        iconColor: .blue
-                    ) {
-                        Text("This app does not collect, transmit, or share any personal data. Voice recordings are stored locally on your device and are never uploaded to any server.")
                     }
                 }
                 .padding()
