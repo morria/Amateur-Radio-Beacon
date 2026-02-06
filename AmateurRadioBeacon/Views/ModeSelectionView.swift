@@ -41,7 +41,6 @@ struct ModeSelectionView: View {
                             mode: .cw,
                             icon: "ellipsis.message",
                             iconColor: .purple,
-                            badge: "CW",
                             subtitle: "Morse Code",
                             description: "Text converted to Morse code with adjustable speed."
                         ) {
