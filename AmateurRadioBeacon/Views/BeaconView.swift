@@ -56,8 +56,8 @@ struct BeaconView: View {
     private func sidebarRow(for mode: BeaconMode) -> some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
-                Text(mode.rawValue)
-                Text(mode.description)
+                Text(mode.displayName)
+                Text(mode.localizedDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -139,7 +139,7 @@ struct BeaconView: View {
             )
             .padding(.vertical, 24)
         }
-        .navigationTitle(mode.rawValue)
+        .navigationTitle(mode.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if showBackButton {
@@ -174,15 +174,15 @@ struct BeaconView: View {
     private func describeError(_ error: Error) -> String {
         switch error {
         case MorseCodeError.emptyText:
-            return "Please enter text to transmit."
+            return String(localized: "Please enter text to transmit.")
         case MorseCodeError.noMorseCharacters:
-            return "The text contains no valid Morse code characters."
+            return String(localized: "The text contains no valid Morse code characters.")
         case MorseCodeError.bufferCreationFailed:
-            return "Failed to generate audio. Please try again."
+            return String(localized: "Failed to generate audio. Please try again.")
         case RecordingService.RecordingError.fileNotFound:
-            return "Recording file not found. It may have been deleted."
+            return String(localized: "Recording file not found. It may have been deleted.")
         case RecordingService.RecordingError.playbackFailed:
-            return "Failed to play recording. Please try again."
+            return String(localized: "Failed to play recording. Please try again.")
         default:
             return error.localizedDescription
         }

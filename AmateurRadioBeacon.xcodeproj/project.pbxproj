@@ -27,6 +27,8 @@
 		1100000000000019 /* ModeSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000019 /* ModeSelectionView.swift */; };
 		1100000000000020 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000020 /* Logger.swift */; };
 		1100000000000021 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2200000000000021 /* AboutView.swift */; };
+		1100000000000022 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2200000000000022 /* Localizable.xcstrings */; };
+		1100000000000023 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 2200000000000023 /* InfoPlist.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,8 @@
 		3300000000000001 /* AmateurRadioBeacon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AmateurRadioBeacon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2200000000000020 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		2200000000000021 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		2200000000000022 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		2200000000000023 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +86,8 @@
 				5500000000000006 /* ViewModels */,
 				5500000000000007 /* Views */,
 				2200000000000018 /* Assets.xcassets */,
+				2200000000000022 /* Localizable.xcstrings */,
+				2200000000000023 /* InfoPlist.xcstrings */,
 			);
 			path = AmateurRadioBeacon;
 			sourceTree = "<group>";
@@ -197,6 +203,13 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
+				"zh-Hans",
+				fr,
+				de,
+				ja,
+				"pt-BR",
+				ko,
 			);
 			mainGroup = 5500000000000001;
 			productRefGroup = 5500000000000009 /* Products */;
@@ -214,6 +227,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1100000000000018 /* Assets.xcassets in Resources */,
+				1100000000000022 /* Localizable.xcstrings in Resources */,
+				1100000000000023 /* InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

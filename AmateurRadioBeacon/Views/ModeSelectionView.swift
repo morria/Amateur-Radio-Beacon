@@ -84,9 +84,9 @@ private struct ModeCard: View {
     let mode: BeaconMode
     let icon: String
     let iconColor: Color
-    var badge: String? = nil
-    let subtitle: String
-    let description: String
+    var badge: LocalizedStringResource? = nil
+    let subtitle: LocalizedStringResource
+    let description: LocalizedStringResource
     let action: () -> Void
 
     var body: some View {
@@ -118,7 +118,7 @@ private struct ModeCard: View {
                 .frame(height: 48)
 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(mode.rawValue)
+                    Text(mode.displayName)
                         .font(.headline)
                         .foregroundStyle(.primary)
 
