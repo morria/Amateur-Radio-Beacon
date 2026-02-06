@@ -1,6 +1,7 @@
 import AVFoundation
 import Foundation
 import SwiftUI
+import UIKit
 
 /// Main view model coordinating all beacon functionality
 @Observable
@@ -114,6 +115,10 @@ final class BeaconViewModel {
         Log.beacon.debug("[BeaconViewModel] startBeacon called for mode: \(mode)")
         activeMode = mode
         syncSettingsToServices()
+
+        // Prevent device from sleeping while beacon is active
+        UIApplication.shared.isIdleTimerDisabled = true
+
         Log.beacon.debug("[BeaconViewModel] Settings synced, starting cadence service")
         cadenceService.start()
         Log.beacon.debug("[BeaconViewModel] Cadence service started")
@@ -124,6 +129,10 @@ final class BeaconViewModel {
         cadenceService.stop()
         stopCurrentModeOutput()
         activeMode = nil
+
+        // Allow device to sleep again
+        UIApplication.shared.isIdleTimerDisabled = false
+
         Log.beacon.debug("[BeaconViewModel] Beacon stopped")
     }
 
