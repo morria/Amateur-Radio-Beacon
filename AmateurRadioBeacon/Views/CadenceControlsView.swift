@@ -22,11 +22,14 @@ struct CadenceControlsView: View {
     }
 }
 
-/// Duration input control with stepper and text display
+/// Duration input control with text field for direct entry
 private struct DurationControl: View {
     let label: String
     @Binding var value: Double
     let range: ClosedRange<Double>
+
+    @State private var textValue: String = ""
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         HStack(spacing: 12) {
@@ -36,35 +39,30 @@ private struct DurationControl: View {
 
             Spacer()
 
-            HStack(spacing: 8) {
-                Button {
-                    adjustValue(by: -1)
-                } label: {
-                    Image(systemName: "minus.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(value <= range.lowerBound)
-
-                Text(formatDuration(value))
+            HStack(spacing: 4) {
+                TextField("", text: $textValue)
+                    .keyboardType(.numberPad)
+                    .multilineTextAlignment(.trailing)
                     .font(.system(.body, design: .monospaced))
-                    .monospacedDigit()
-                    .frame(minWidth: 50)
+                    .frame(width: 50)
+                    .focused($isFocused)
+                    .onAppear {
+                        textValue = "\(Int(value))"
+                    }
+                    .onChange(of: value) { _, newValue in
+                        if !isFocused {
+                            textValue = "\(Int(newValue))"
+                        }
+                    }
+                    .onChange(of: isFocused) { _, focused in
+                        if !focused {
+                            applyTextValue()
+                        }
+                    }
 
-                Button {
-                    adjustValue(by: 1)
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .disabled(value >= range.upperBound)
+                Text("sec")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
         }
         .padding()
@@ -72,19 +70,11 @@ private struct DurationControl: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
-    private func adjustValue(by delta: Double) {
-        let newValue = value + delta
-        value = min(max(newValue, range.lowerBound), range.upperBound)
-    }
-
-    private func formatDuration(_ seconds: Double) -> String {
-        if seconds >= 60 {
-            let minutes = Int(seconds) / 60
-            let secs = Int(seconds) % 60
-            return "\(minutes)m \(secs)s"
-        } else {
-            return "\(Int(seconds))s"
+    private func applyTextValue() {
+        if let seconds = Double(textValue) {
+            value = min(max(seconds, range.lowerBound), range.upperBound)
         }
+        textValue = "\(Int(value))"
     }
 }
 
